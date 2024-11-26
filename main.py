@@ -1,104 +1,114 @@
-import json
-import bcrypt
-import os
-
-# État initial du fichier
-empty_data = {
-    "user": {},
-    "PWD": {}
-}
-
-# Fonction pour initialiser et/ou créer le fichier JSON
-def file_init(data):
-    with open("user_data.json", "w+") as file: 
-        json.dump(data, file, indent=4)
+import json, bcrypt, os
 
 
-# Fonction pour lire les données du fichier JSON
-def file_read():
-    # Si le fichier n'existe pas, initialise-le
-    if not os.path.exists("user_data.json"):
-        file_init(empty_data)
+# Fonction pour lire les données d'un fichier JSON
+def file_read(filename):
+    if not os.path.exists(filename):
+        print(f"Le fichier {filename} n'existe pas.")
+        return None
 
-    # Ouvre le fichier pour lecture
-    with open("user_data.json", "r") as file:
+    with open(filename, "r") as file:
         try:
-            data = json.load(file)  
+            data = json.load(file)
             return data
-        except json.JSONDecodeError:  # Si le fichier est vide ou corrompu
-            print("Fichier JSON vide ou corrompu. Réinitialisation...")
-            file_init(empty_data) 
-            return data
+        except json.JSONDecodeError:
+            print(f"Le fichier {filename} est vide ou corrompu.")
+            return None
 
+# Fonction pour récupérer les fichiers JSON dans le dossier courant
+def get_json_files():
+    files = os.listdir(".")
+    json_files = [file for file in files if file.endswith(".json")]
+    return json_files
 
-# Fonction pour écrire dans le fichier JSON
-def file_write(data):
-    with open("user_data.json", "w") as file:
+# Fonction pour écrire dans un fichier JSON
+def file_write(data, filename):
+    with open(filename, "w") as file:
         json.dump(data, file, indent=4)
-
 
 # Fonction pour créer un nouvel utilisateur
 def user_creation():
     print("Création de compte pour PassWordManager")
     username = input("Veuillez entrer votre nom d'utilisateur : ").strip()
-    main_password = str(input(
+    existing_users = [file.split(".")[0] for file in get_json_files()]  # Liste des noms d'utilisateur existants (sans l'extension .json)
+
+    # Vérifie si l'utilisateur existe déjà
+    if username in existing_users:
+        print("Ce nom d'utilisateur existe déjà. Veuillez en choisir un autre.")
+        return
+
+    main_password = input(
         "Veuillez entrer le mot de passe principal de votre PWM\n"
         "(ce dernier doit être sécurisé car il donne accès à tous les autres mots de passe) : "
-    ).strip())
+    ).strip()
 
-    if username and main_password: 
-        user_data = file_read()
-
-        # Vérifie si l'utilisateur existe déjà
-        for user in user_data["user"]:
-            if user["username"] == username:
-                print("Cet utilisateur existe déjà. Veuillez choisir un autre nom.")
-                return
-
-        # Hashage
+    if username and main_password:
+        # Hashage du mot de passe
         hashed_password = bcrypt.hashpw(main_password.encode(), bcrypt.gensalt()).decode()
 
-        # Ajoute l'utilisateur au .json
-        user_data["user"][username] = hashed_password
-        file_write(user_data)
-        print("Utilisateur créé avec succès !")
+        # Création des données de l'utilisateur
+        user_file_data = {
+            "user": username,
+            "pwd": hashed_password,
+            "PWD": {}
+        }
 
-        # Lancement de la connexion après création
+        # Sauvegarde dans un fichier spécifique
+        file_write(user_file_data, f"{username}.json")
+        print(f"Utilisateur '{username}' créé avec succès !")
         connection()
-
     else:
         print("Le nom d'utilisateur et le mot de passe ne doivent pas être vides.")
 
+
 # Fonction de connexion
 def connection():
-    user_data = file_read()
+    print("Connexion au PassWordManager")
+    username = input("Nom d'utilisateur : ").strip()
+    main_password = input("Mot de passe principal : ").strip()
 
-    if not user_data["user"]:  # Si aucun utilisateur n'est enregistré
-        print("Aucun utilisateur trouvé. Créons un compte !")
-        user_creation()
+    # Vérifie si le fichier de l'utilisateur existe
+    user_file = f"{username}.json"
+    if user_file not in get_json_files():
+        print("Utilisateur introuvable.")
+        return
+
+    # Charge les données de l'utilisateur
+    user_data = file_read(user_file)
+    if not user_data:
+        print("Impossible de lire les données de l'utilisateur.")
+        return
+
+    # Vérifie le mot de passe
+    stored_hash = user_data["pwd"]
+    if bcrypt.checkpw(main_password.encode(), stored_hash.encode()):
+        print(f"Bienvenue, {username} !")
     else:
-        print("Connexion au PassWordManager")
-        username = str(input("Nom d'utilisateur : ").strip())
-        main_password = str(input("Mot de passe principal : ").strip())
+        print("Mot de passe incorrect.")
 
-        for user in user_data["user"]:
-            if username in user_data["user"]:
-            # Récupère le hash du mot de passe associé
-                stored_hash = user_data["user"][username]
-
-
-                # Vérifie si le mot de passe fourni correspond au hash stocké
-                if bcrypt.checkpw(main_password.encode(), stored_hash.encode()):
-                    print(f"Bienvenue, {username} !")
-                    return  # Connexion réussie
-                else:
-                    print("Mot de passe incorrect.")
+# Fonction pour afficher les choix principaux
+def choice():
+    print("1. Connexion \n2. Création de compte")
+    while True:
+        user_choice = input("1? 2? ").strip()
+        if user_choice == "1":
+            connection()
+            break
+        elif user_choice == "2":
+            user_creation()
+            break
         else:
-            print("Utilisateur introuvable.")
+            print("Veuillez choisir 1 ou 2.")
 
 # Fonction principale
 def main():
-    connection()
+    users = get_json_files()
+    if not users:
+        print("Aucun compte n'existe. Créons un compte !")
+        user_creation()
+    else:
+        choice()
 
 # Lancement du programme
-main()
+if __name__ == "__main__":
+    main()
