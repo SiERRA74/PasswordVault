@@ -1,4 +1,5 @@
 import json, bcrypt, os
+from colors import Colors as cl
 
 def clean_console():
     os.system('cls')
@@ -67,7 +68,7 @@ def user_creation():
 # Fonction de connexion
 def connection(msg=""):
     clean_console()
-    print(msg)
+    print(cl.RED+msg+cl.END)
     print("Connexion au PassWordManager")
     username = input("Nom d'utilisateur : ").strip().lower()
     main_password = input("Mot de passe principal : ").strip()
@@ -86,12 +87,15 @@ def connection(msg=""):
     # Vérifie le mot de passe
     stored_hash = user_data["pwd"]
     if bcrypt.checkpw(main_password.encode(), stored_hash.encode()):
+        clean_console()
         print(f"Bienvenue, {username} !")
+        render_creds(username)
     else:
-        print("Mot de passe incorrect.")
+        connection("Mot de passe incorrect.")
 
 # Fonction pour afficher les choix principaux
 def user_choice():
+
     print("1. Connexion \n2. Création de compte")
     while True:
         user_choice = input("1? 2?").strip()
@@ -102,13 +106,14 @@ def user_choice():
             user_creation()
             break
         else:
+            clean_console()
             print("Veuillez choisir 1 ou 2.")
 
 # Fonction principale
 def main():
     users = get_json_files()
     if not users:
-        print("Aucun compte n'existe. Créons un compte !")
+        print(cl.ITALIC + "Aucun compte n'existe. Créons un compte !" + cl.END)
         user_creation()
     else:
         user_choice()
