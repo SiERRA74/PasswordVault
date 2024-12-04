@@ -66,23 +66,20 @@ def user_creation():
 
 
 # Fonction de connexion
-def connection(msg=""):
+def connection(main_password,username, msg=""):
     clean_console()
     print(cl.RED+msg+cl.END)
-    print("Connexion au PassWordManager")
-    username = input("Nom d'utilisateur : ").strip().lower()
-    main_password = input("Mot de passe principal : ").strip()
+    print("Connexion en cours...")
 
     # Vérifie si le fichier de l'utilisateur existe
     user_file = f"{username}.json"
     if user_file not in get_json_files():
-        connection("Utilisateur introuvable.")
+        return("Utilisateur introuvable.")
 
     # Charge les données de l'utilisateur
     user_data = file_read(user_file)
     if not user_data:
-        print("Impossible de lire les données de l'utilisateur.")
-        return
+        return("Fichier vide...")
 
     # Vérifie le mot de passe
     stored_hash = user_data["pwd"]
@@ -91,7 +88,7 @@ def connection(msg=""):
         print(f"Bienvenue, {username} !")
         render_creds(username)
     else:
-        connection("Mot de passe incorrect.")
+        return("Mot de passe incorrect.")
 
 # Fonction pour afficher les choix principaux
 def user_choice():
@@ -110,7 +107,7 @@ def user_choice():
             print("Veuillez choisir 1 ou 2.")
 
 # Fonction principale
-def main():
+def launch():
     users = get_json_files()
     if not users:
         print(cl.ITALIC + "Aucun compte n'existe. Créons un compte !" + cl.END)
@@ -160,8 +157,3 @@ def add_password(login):
     else:
         print("Tous les champs (alias, identifiant, mot de passe) doivent être remplis.")
 
-
-
-# Lancement du programme
-if __name__ == "__main__":
-    main()
