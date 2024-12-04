@@ -1,5 +1,8 @@
 import json, bcrypt, os
 
+def clean_console():
+    os.system('cls')
+
 
 # Fonction pour lire les données d'un fichier JSON
 def file_read(filename):
@@ -29,7 +32,7 @@ def file_write(data, filename):
 # Fonction pour créer un nouvel utilisateur
 def user_creation():
     print("Création de compte pour PassWordManager")
-    username = input("Veuillez entrer votre nom d'utilisateur : ").strip()
+    username = input("Veuillez entrer votre nom d'utilisateur : ").strip().lower
     existing_users = [file.split(".")[0] for file in get_json_files()]  # Liste des noms d'utilisateur existants (sans l'extension .json)
 
     # Vérifie si l'utilisateur existe déjà
@@ -56,22 +59,23 @@ def user_creation():
         # Sauvegarde dans un fichier spécifique
         file_write(user_file_data, f"{username}.json")
         print(f"Utilisateur '{username}' créé avec succès !")
-        connection()
+        
     else:
         print("Le nom d'utilisateur et le mot de passe ne doivent pas être vides.")
 
 
 # Fonction de connexion
-def connection():
+def connection(msg=""):
+    clean_console()
+    print(msg)
     print("Connexion au PassWordManager")
-    username = input("Nom d'utilisateur : ").strip()
+    username = input("Nom d'utilisateur : ").strip().lower()
     main_password = input("Mot de passe principal : ").strip()
 
     # Vérifie si le fichier de l'utilisateur existe
     user_file = f"{username}.json"
     if user_file not in get_json_files():
-        print("Utilisateur introuvable.")
-        return
+        connection("Utilisateur introuvable.")
 
     # Charge les données de l'utilisateur
     user_data = file_read(user_file)
@@ -87,10 +91,10 @@ def connection():
         print("Mot de passe incorrect.")
 
 # Fonction pour afficher les choix principaux
-def choice():
+def user_choice():
     print("1. Connexion \n2. Création de compte")
     while True:
-        user_choice = input("1? 2? ").strip()
+        user_choice = input("1? 2?").strip()
         if user_choice == "1":
             connection()
             break
@@ -104,10 +108,54 @@ def choice():
 def main():
     users = get_json_files()
     if not users:
-        print("Aucun compte n'existe. Créons un compte !")
+        print("Aucun compte n'existe. Créons un compte !")
         user_creation()
     else:
-        choice()
+        user_choice()
+
+def render_creds(login):
+    user_data = file_read(f"{login}.json")  # Charge le fichier JSON de l'utilisateur actuel
+    columns = ["Alias", "Identifiant", "Mot de passe"]  # En-têtes des colonnes
+
+    # Affiche les en-têtes
+    print(f"{columns[0]:<20}{columns[1]:<20}{columns[2]:<20}")
+    print("-" * 60)
+
+    # Parcourt et affiche les entrées de "PWD"
+    for alias, creds in user_data["PWD"].items():
+        identifiant = creds.get("identifiant", "N/A")
+        mot_de_passe = creds.get("password", "N/A")
+        print(f"{alias:<20}{identifiant:<20}{mot_de_passe:<20}")
+
+    # Si aucune donnée n'existe
+    if not user_data["PWD"]:
+        print("Aucune donnée enregistrée.")
+
+
+def add_password(login):
+    user_data = file_read(f"{login}.json")  # Charge les données du fichier JSON de l'utilisateur
+
+    # Demande des informations à l'utilisateur
+    alias = input("Entrez un alias pour ce mot de passe (ex. 'email_gmail') : ").strip()
+    if alias in user_data["PWD"]:
+        print("Cet alias existe déjà. Choisissez un alias unique.")
+        return
+
+    identifiant = input("Entrez l'identifiant ou le login associé : ").strip()
+    password = input("Entrez le mot de passe : ").strip()
+
+    if alias and identifiant and password:
+        # Ajoute les informations au JSON
+        user_data["PWD"][alias] = {
+            "identifiant": identifiant,
+            "password": password
+        }
+        file_write(user_data, user_data["user"])  # Sauvegarde dans le fichier JSON
+        print(f"Mot de passe ajouté sous l'alias '{alias}' avec succès !")
+    else:
+        print("Tous les champs (alias, identifiant, mot de passe) doivent être remplis.")
+
+
 
 # Lancement du programme
 if __name__ == "__main__":
