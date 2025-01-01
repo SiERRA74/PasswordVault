@@ -30,9 +30,6 @@ def render_creds(login):
     user_data = file_read(f"{login}.json")  # Charge le fichier JSON de l'utilisateur actuel
     columns = ["Alias", "Identifiant", "Mot de passe"]  # En-têtes des colonnes
 
-    # Affiche les en-têtes
-    print(f"{columns[0]:<20}{columns[1]:<20}{columns[2]:<20}")
-    print("-" * 60)
 
     # Parcourt et affiche les entrées de "PWD"
     for alias, creds in user_data["PWD"].items():

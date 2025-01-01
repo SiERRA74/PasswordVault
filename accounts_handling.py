@@ -1,7 +1,6 @@
 from bcrypt import *
 import pwd_management as pwd
 
-
 def checkIFexist(user):
     # Vérifie si l'utilisateur existe déjà
     all_users = pwd.get_json_files()
@@ -30,8 +29,7 @@ def handle_sign_in(login_entry, password_entry, result_label):
         if not is_same_password:
             result_label.config(text="Mot de passe incorrect", fg="red")
         else:
-            result_label.config(text=f"Bienvenue, {username_ui} !", fg="green")
-
+            pass
 
 def handle_sign_up(login_entry, password_entry, confirm_password, result_label):
     """Gère l'inscription d'un utilisateur."""
@@ -67,6 +65,7 @@ def handle_sign_up(login_entry, password_entry, confirm_password, result_label):
     try:
         pwd.file_write(user_file_data, username_ui)
         result_label.config(text=f"Compte créé avec succès ! Bienvenue, {username_ui} !", fg="green")
+        return
         
     except Exception as e:
         result_label.config(text=f"Erreur lors de la création du compte : {str(e)}", fg="red")
