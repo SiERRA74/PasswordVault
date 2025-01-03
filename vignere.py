@@ -7,10 +7,7 @@ regex = [
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 ]
 
-
-cle = "key"
-
-mdp = "mot"
+print("Vigenere crypting opened")
 
 def search(char,regex):
     for i in range(len(regex)):
@@ -43,6 +40,3 @@ def decryptage_vignere(key,msg):
     return decrypted_msg
 
 
-crpt = vignere_cryptage(cle,mdp)
-print(crpt)
-print(decryptage_vignere(cle,crpt))

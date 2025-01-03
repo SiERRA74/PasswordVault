@@ -1,6 +1,7 @@
 import tkinter as tk
 import accounts_handling as acc
 import wallpaper as wp
+import vault
 
 """############################################################################################################################
 ########################################  PARTIE 1 : CHOIX INSCRIPTION / CONNEXION ############################################ 
@@ -58,32 +59,32 @@ def display_inscritpion_menu(canvas, width, height, wallpaper):
     canvas.create_window(width / 2, 350, window=back_btn)
     canvas.create_window(width / 2, 430, window=result_label)
 
-
+    
 def display_connection_menu(canvas, width, height, wallpaper):
-    """Affiche le menu de connexion."""
     clear_canvas(canvas)
-
-    # Réafficher le wallpaper
     canvas.create_image(0, 0, image=wallpaper, anchor="nw")
 
-    # Widgets pour la connexion
     title = tk.Label(canvas, text="Connexion", font=('Arial', 22), bg="#000000", fg="#FFFFFF")
     login_entry = tk.Entry(canvas)
     password_entry = tk.Entry(canvas, show="*")
     result_label = tk.Label(canvas, text="", font=('Arial', 12), bg="#000000", fg="#FFFFFF")
 
-    login_btn = tk.Button(canvas, text="Se connecter", font=('Arial', 12), bg='#000000', fg="#FFFFFF", activebackground="#fa4902",
-                        command=lambda: acc.handle_sign_in(login_entry, password_entry, result_label))
+    def handle_login():
+        username, master_password = acc.handle_sign_in(login_entry, password_entry, result_label)
+        if username and master_password:  # Si connexion réussie
+            vault.display_vault(canvas, width, height, wallpaper, username, master_password)
+
+    login_btn = tk.Button(canvas, text="Se connecter", font=('Arial', 12), bg='#000000', fg="#FFFFFF", activebackground="#fa4902", command=handle_login)
     back_btn = tk.Button(canvas, text="Retour", font=('Arial', 12), bg='#000000', fg="#FFFFFF", activebackground="#fa4902",
                         command=lambda: display_main_menu(canvas, width, height, wallpaper))
 
-    # Placement des widgets
     canvas.create_window(width / 2, 50, window=title)
     canvas.create_window(width / 2, 200, window=login_entry)
     canvas.create_window(width / 2, 250, window=password_entry)
     canvas.create_window(width / 2, 300, window=login_btn)
     canvas.create_window(width / 2, 350, window=back_btn)
     canvas.create_window(width / 2, 430, window=result_label)
+
 
 
 ###############################################################################################################################

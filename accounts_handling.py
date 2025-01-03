@@ -18,18 +18,21 @@ def handle_sign_in(login_entry, password_entry, result_label):
 
     if not username_ui or not password_ui:
         result_label.config(text="Nom d'utilisateur ou mot de passe vide.", fg="red")
-        return
+        return None, None
 
     if not checkIFexist(username_ui):
-        result_label.config(text="Identifiant innéxistant", fg="red")
+        result_label.config(text="Identifiant inexistant", fg="red")
+        return None, None
     else:
         data = pwd.file_read(username_ui)
         hashed_password = data["pwd"]
         is_same_password = checkpw(password_ui.encode(), hashed_password.encode())
         if not is_same_password:
             result_label.config(text="Mot de passe incorrect", fg="red")
+            return None, None
         else:
-            pass
+            return username_ui, password_ui
+
 
 def handle_sign_up(login_entry, password_entry, confirm_password, result_label):
     """Gère l'inscription d'un utilisateur."""
