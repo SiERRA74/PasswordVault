@@ -2,7 +2,7 @@
 import json,os
 from vignere import *
 
-def add_password(username, alias, login, crypted_password):
+def add_password(username, alias, login, password,link):
     user_data = file_read(f"{username}")  # Charge les données du fichier JSON de l'utilisateur
 
     if alias in user_data["PWD"]:
@@ -11,14 +11,25 @@ def add_password(username, alias, login, crypted_password):
 
     login = login.strip()
 
-    if alias and login and crypted_password:
+    if alias and login and password and link:
         # Ajoute les informations au JSON
         user_data["PWD"][alias] = {
-            "identifiant": login,
-            "password": crypted_password
+            "login": login,
+            "password": password,
+            "link": link
         }
         file_write(user_data, user_data["user"])  # Sauvegarde dans le fichier JSON
         print(f"Mot de passe ajouté sous l'alias '{alias}' avec succès !")
+
+    elif alias and login and password:
+        # Ajoute les informations au JSON (sans le lien)
+        user_data["PWD"][alias] = {
+            "login": login,
+            "password": password,
+        }
+        file_write(user_data, user_data["user"])  # Sauvegarde dans le fichier JSON
+        print(f"Mot de passe ajouté sous l'alias '{alias}' avec succès !")
+
     else:
         print("Tous les champs (alias, identifiant, mot de passe) doivent être remplis.")
 
