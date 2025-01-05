@@ -14,10 +14,13 @@ Theming Options: Easily toggle between light and dark modes (future feature).
 
 Clone this repository:
 git clone https://github.com/SiERRA74/PWM.git
+
 cd password-vault
 
 (Optional : Create a virtual environment and activate it)
+
 python -m venv venv
+
 source venv/bin/activate # On Windows: venv\Scripts\activate
 
 Install the required dependencies:
