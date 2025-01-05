@@ -15,7 +15,7 @@ def handle_sign_in(login_entry, password_entry, result_label):
     """Gère la connexion de l'utilisateur."""
     username_ui = login_entry.get().strip()
     password_ui = password_entry.get().strip()
-
+    
     if not username_ui or not password_ui:
         result_label.config(text="Nom d'utilisateur ou mot de passe vide.", fg="red")
         return None, None

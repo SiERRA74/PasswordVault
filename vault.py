@@ -3,6 +3,7 @@ import wallpaper as wp
 import pwd_management as pwd
 import vignere
 import accounts_handling as acc
+from tkinter.scrolledtext import ScrolledText
 
 
 """############################################################################################################################
@@ -16,32 +17,61 @@ def go_back(canvas, width, height, wallpaper, username, master_password):
     """Retour à l'écran précédent."""
     display_vault(canvas, width, height, wallpaper, username, master_password)
 
+
 def display_vault(canvas, width, height, wallpaper, username, master_password):
     """Affiche les mots de passe de l'utilisateur."""
     clear_canvas(canvas)
     canvas.create_image(0, 0, image=wallpaper, anchor="nw")
 
-    title = tk.Label(canvas, text=f"Bienvenue, {username}", font=('Arial', 22), bg="#000000", fg="#FFFFFF")
-    canvas.create_window(width / 2, 50, window=title)
+    # Titre de la page
+    title = tk.Label(canvas, text=f"Bienvenue, {username}", font=('Arial', 20), bg="#000000", fg="#FFFFFF")
+    canvas.create_window(width / 2, 30, window=title)
 
+    # Charger les mots de passe depuis le fichier
     user_data = pwd.file_read(username)
     passwords = user_data["PWD"]
 
-    y_pos = 100
+    # ScrolledText pour afficher les mots de passe
+    scrolled_text = ScrolledText(canvas, width=80, height=15, wrap=tk.WORD, bg="#000000", fg="#FFFFFF", font=('Arial', 12))
+    scrolled_text.place(x=40, y=80)
+
+    # Création d'une frame dans le ScrolledText
+    frame = tk.Frame(scrolled_text, bg="#000000")
+    scrolled_text.window_create(tk.END, window=frame)
+
+    # Ajouter les mots de passe
     for alias, details in passwords.items():
-        login = details["login"]
-        login = vignere.decryptage_vignere(master_password, login)
-        encrypted_password = details["password"]
-        decrypted_password = vignere.decryptage_vignere(master_password, encrypted_password)
+        # Décryptage des champs
+        login = vignere.decryptage_vignere(master_password, details["login"])
+        decrypted_password = vignere.decryptage_vignere(master_password, details["password"])
 
-        alias_label = tk.Label(canvas, text=f"{alias} ({login}): {decrypted_password}", font=('Arial', 12), bg="#000000", fg="#FFFFFF")
-        canvas.create_window(width / 2, y_pos, window=alias_label)
-        y_pos += 30
+        # Frame horizontale pour chaque mot de passe
+        row_frame = tk.Frame(frame, bg="#000000")
+        row_frame.pack(fill="x", pady=5)
 
-    add_password_btn = tk.Button(canvas, text="Ajouter un mot de passe", font=('Arial', 15), bg='#000000', fg="#FFFFFF", activebackground="#fa4902",
-                                 command=lambda: password_add_screen(canvas, width, height, wallpaper, username, master_password))
+        # Alias
+        alias_label = tk.Label(row_frame, text=alias, font=('Arial', 12), bg="#000000", fg="#FFFFFF", width=15, anchor="w")
+        alias_label.pack(side="left", padx=5)
+
+        # Identifiant
+        login_label = tk.Label(row_frame, text=login, font=('Arial', 12), bg="#000000", fg="#FFFFFF", width=20, anchor="w")
+        login_label.pack(side="left", padx=5)
+
+        # Mot de passe
+        password_label = tk.Label(row_frame, text=decrypted_password, font=('Arial', 12), bg="#000000", fg="#FFFFFF", width=20, anchor="w")
+        password_label.pack(side="left", padx=5)
+
+        # Bouton d'action
+        action_button = tk.Button(row_frame, text="X", font=('Arial', 12), bg='#fa4902', fg="#FFFFFF",
+                                command=lambda alias=alias: delete_password(alias, canvas, width, height, wallpaper, username, master_password))
+        action_button.pack(side="left", padx=5)
+
+
+    # Bouton pour ajouter un mot de passe
+    add_password_btn = tk.Button(canvas, text="Ajouter un mot de passe", font=('Arial', 14), bg='#000000', fg="#FFFFFF",
+                                 activebackground="#fa4902",
+                                 command=lambda: password_add_screen(canvas, width, height, wallpaper, username, master_password,scrolled_text))
     canvas.create_window(width / 2, height - 50, window=add_password_btn)
-
 
 
 """############################################################################################################################
@@ -49,8 +79,11 @@ def display_vault(canvas, width, height, wallpaper, username, master_password):
 ############################################################################################################################"""
 
 
-def password_add_screen(canvas, width, height, wallpaper, username, master_password):
+
+
+def password_add_screen(canvas, width, height, wallpaper, username, master_password, scroll):
     """Affiche l'écran d'ajout de mot de passe."""
+    scroll.destroy()
     clear_canvas(canvas)
     canvas.create_image(0, 0, image=wallpaper, anchor="nw")
 
@@ -83,8 +116,8 @@ def password_add_screen(canvas, width, height, wallpaper, username, master_passw
     canvas.create_window(width / 2, 340, window=link_entry)
 
     # Résultat
-    result_label = tk.Label(canvas, text="", font=('Arial', 13), bg="#000000", fg="#FFFFFF")
-    canvas.create_window(width / 2, 370, window=result_label)
+    result_label = tk.Label(canvas, text="", font=('Arial', 12), bg="#000000", fg="#FFFFFF")
+    canvas.create_window(width / 2, 430, window=result_label)
 
     # Fonction pour sauvegarder
     def save_password():
@@ -101,11 +134,8 @@ def password_add_screen(canvas, width, height, wallpaper, username, master_passw
         encrypted_password = vignere.vignere_cryptage(master_password, password)
 
         # Ajouter les données au gestionnaire
-        pwd.add_password(username, alias, {
-            "identifiant": encrypted_login,
-            "password": encrypted_password,
-            "link": link
-        })
+        pwd.add_password(username, alias, encrypted_login, encrypted_password, link)
+
         result_label.config(text="Mot de passe ajouté avec succès !", fg="green")
 
         # Effacer les champs après la sauvegarde
@@ -120,9 +150,20 @@ def password_add_screen(canvas, width, height, wallpaper, username, master_passw
     back_btn = tk.Button(canvas, text="Retour", font=('Arial', 14), bg='#000000', fg="#FFFFFF", activebackground="#fa4902",
                          command=lambda: go_back(canvas, width, height, wallpaper, username, master_password))
 
-    canvas.create_window(width / 2, height -50, window=save_btn)
-    canvas.create_window(width / 2, height - 30, window=back_btn)
+    canvas.create_window(width / 2, 380, window=save_btn)
+    canvas.create_window(width / 2, 420, window=back_btn)
 
+
+def delete_password(alias, canvas, width, height, wallpaper, username, master_password):
+    """Supprime le mot de passe associé à l'alias."""
+    user_data = pwd.file_read(username)  # Charge les données utilisateur
+    if alias in user_data["PWD"]:
+        del user_data["PWD"][alias]  # Supprime l'entrée
+        pwd.file_write(user_data, username)  # Sauvegarde les changements
+        print(f"Mot de passe pour {alias} supprimé avec succès.")
+        go_back(canvas, width, height, wallpaper, username, master_password)
+    else:
+        print(f"Alias {alias} introuvable.")
 
 
 """############################################################################################################################
@@ -132,3 +173,4 @@ def password_add_screen(canvas, width, height, wallpaper, username, master_passw
 
 def generate_password(canvas, width, height, wallpaper):
     pass
+    """TODO"""

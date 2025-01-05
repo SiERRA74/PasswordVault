@@ -78,32 +78,37 @@ def display_connection_menu(canvas, width, height, wallpaper):
     title = tk.Label(canvas, text="Connexion", font=('Arial', 22), bg="#000000", fg="#FFFFFF")
     canvas.create_window(width / 2, 50, window=title)
 
-
     # Nom d'utilisateur
     login_label = tk.Label(canvas, text="Nom d'utilisateur", font=('Arial', 14), bg="#000000", fg="#FFFFFF")
     canvas.create_window(width / 2, 180, window=login_label)
-    login_entry = tk.Entry(canvas,width=15, font=('Arial 14'))
+    login_entry = tk.Entry(canvas, width=15, font=('Arial', 14))
     canvas.create_window(width / 2, 210, window=login_entry)
 
     # Mot de passe
     password_label = tk.Label(canvas, text="Mot de passe", font=('Arial', 14), bg="#000000", fg="#FFFFFF")
     canvas.create_window(width / 2, 240, window=password_label)
-    password_entry = tk.Entry(canvas,width=15, font=('Arial 14'), show="*")
+    password_entry = tk.Entry(canvas, width=15, font=('Arial', 14), show="*")
     canvas.create_window(width / 2, 270, window=password_entry)
-
 
     # Résultat
     result_label = tk.Label(canvas, text="", font=('Arial', 12), bg="#000000", fg="#FFFFFF")
-    canvas.create_window(width / 2, 270, window=result_label)
+    canvas.create_window(width / 2, 430, window=result_label)
+
+    # Fonction pour gérer la connexion
+    def handle_login():
+        username, master_password = acc.handle_sign_in(login_entry, password_entry, result_label)
+        if username and master_password:  # Si connexion réussie
+            vault.display_vault(canvas, width, height, wallpaper, username, master_password)
 
     # Boutons
     login_btn = tk.Button(canvas, text="Se connecter", font=('Arial', 16), bg='#000000', fg="#FFFFFF", activebackground="#fa4902",
-                          command=lambda: acc.handle_sign_in(login_entry, password_entry, result_label))
+                          command=handle_login)
     back_btn = tk.Button(canvas, text="Retour", font=('Arial', 16), bg='#000000', fg="#FFFFFF", activebackground="#fa4902",
                          command=lambda: display_main_menu(canvas, width, height, wallpaper))
-    
+
     canvas.create_window(width / 2, 335, window=login_btn)
     canvas.create_window(width / 2, 380, window=back_btn)
+
 
 
 

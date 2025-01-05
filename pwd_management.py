@@ -2,7 +2,7 @@
 import json,os
 from vignere import *
 
-def add_password(username, alias, login, password,link):
+def add_password(username, alias, login, password, link):
     user_data = file_read(f"{username}")  # Charge les données du fichier JSON de l'utilisateur
 
     if alias in user_data["PWD"]:
