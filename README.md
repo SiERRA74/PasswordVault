@@ -13,7 +13,7 @@ Theming Options: Easily toggle between light and dark modes (future feature).
 ## Installation :
 
 Clone this repository:
-git clone https://github.com/your-username/password-vault.git
+git clone https://github.com/SiERRA74/PWM.git
 cd password-vault
 
 (Optional : Create a virtual environment and activate it)
