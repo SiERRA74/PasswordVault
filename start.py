@@ -2,6 +2,7 @@ import tkinter as tk
 import accounts_handling as acc
 import wallpaper as wp
 import vault
+import os
 
 """############################################################################################################################
 ########################################  PARTIE 1 : CHOIX INSCRIPTION / CONNEXION ############################################ 
@@ -123,6 +124,11 @@ def main(mod="dark"):
     root.resizable(0, 0)
     root.title("Password Vault")
 
+    #Creating user directory in case it doesn't exist
+    users_folder ="users"
+    if not os.path.isdir(users_folder): 
+        os.makedirs(users_folder)
+
     # Charger le wallpaper et créer le canvas
     canvas, wallpaper_image = wp.wallpaper(root, width, height)
 
@@ -131,6 +137,10 @@ def main(mod="dark"):
 
     # Lancement de la boucle principale
     root.mainloop()
+
+
+
+
 
 if __name__ == "__main__":
     main()

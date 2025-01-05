@@ -13,15 +13,24 @@ Theming Options: Easily toggle between light and dark modes (future feature).
 ## Installation :
 
 Clone this repository:
+
+```
 git clone https://github.com/your-username/password-vault.git
 cd password-vault
+```
 
 (Optional : Create a virtual environment and activate it)
+
+```
 python -m venv venv
 source venv/bin/activate # On Windows: venv\Scripts\activate
+```
 
 Install the required dependencies:
+
+```
 pip install bcrypt
+```
 
 ## Usage
 
