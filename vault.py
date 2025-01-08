@@ -79,8 +79,6 @@ def display_vault(canvas, width, height, wallpaper, username, master_password):
 ############################################################################################################################"""
 
 
-
-
 def password_add_screen(canvas, width, height, wallpaper, username, master_password, scroll):
     """Affiche l'écran d'ajout de mot de passe."""
     scroll.destroy()
@@ -100,19 +98,29 @@ def password_add_screen(canvas, width, height, wallpaper, username, master_passw
     # Identifiant
     login_label = tk.Label(canvas, text="Identifiant", font=('Arial', 14), bg="#000000", fg="#FFFFFF")
     canvas.create_window(width / 2, 170, window=login_label)
-    login_entry = tk.Entry(canvas,width=25, font=('Arial 14'))
+    login_entry = tk.Entry(canvas, width=25, font=('Arial 14'))
     canvas.create_window(width / 2, 200, window=login_entry)
 
     # Mot de passe
     password_label = tk.Label(canvas, text="Mot de passe", font=('Arial', 14), bg="#000000", fg="#FFFFFF")
     canvas.create_window(width / 2, 240, window=password_label)
-    password_entry = tk.Entry(canvas,width=25, font=('Arial 14'))
-    canvas.create_window(width / 2, 270, window=password_entry)
+    password_entry = tk.Entry(canvas, width=20, font=('Arial 14'))
+    canvas.create_window(width / 2 - 50, 270, window=password_entry)
+
+    # Bouton pour générer le mot de passe
+    def enter_gen_password():
+        gen_pass = vignere.generate_password()
+        password_entry.delete(0, tk.END)  
+        password_entry.insert(0, gen_pass)  
+
+    gen_pass_button = tk.Button(canvas, text="♻︎", font=('Arial', 12), bg='#fa4902', fg="#FFFFFF", activebackground="#000000",
+                              command=enter_gen_password)
+    canvas.create_window(width / 2 + 120, 270, window=gen_pass_button)
 
     # Lien/URL
     link_label = tk.Label(canvas, text="Lien (facultatif)", font=('Arial', 14), bg="#000000", fg="#FFFFFF")
     canvas.create_window(width / 2, 310, window=link_label)
-    link_entry = tk.Entry(canvas,width=25, font=('Arial 14'))
+    link_entry = tk.Entry(canvas, width=25, font=('Arial 14'))
     canvas.create_window(width / 2, 340, window=link_entry)
 
     # Résultat
@@ -154,6 +162,7 @@ def password_add_screen(canvas, width, height, wallpaper, username, master_passw
     canvas.create_window(width / 2, 420, window=back_btn)
 
 
+
 def delete_password(alias, canvas, width, height, wallpaper, username, master_password):
     """Supprime le mot de passe associé à l'alias."""
     user_data = pwd.file_read(username)  # Charge les données utilisateur
@@ -170,7 +179,4 @@ def delete_password(alias, canvas, width, height, wallpaper, username, master_pa
 ######################################## PARTIE 4 : GENERATING SAFE PASSWORDS #################################################
 ############################################################################################################################"""
 
-
-def generate_password(canvas, width, height, wallpaper):
-    pass
-    """TODO"""
+#Voir vignere.py

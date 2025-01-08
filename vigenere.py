@@ -1,3 +1,4 @@
+from random import randint
 
 global regex1
 regex = [
@@ -47,3 +48,9 @@ def decryptage_vignere(key, msg):
     return decrypted_msg
 
 
+def generate_password(strenght:int = 12):
+    gen_password = ""
+    for i in range(strenght):
+        point = randint(0, len(regex)-1)
+        gen_password += regex[point]
+    return gen_password
