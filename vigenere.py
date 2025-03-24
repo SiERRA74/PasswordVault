@@ -15,7 +15,7 @@ def search(char,regex):
             return i
     return None
 
-def vignere_cryptage(key, msg):
+def vigenere_cryptage(key, msg):
     crypted_msg = ""
     k = 0
     for m in range(len(msg)):
@@ -30,7 +30,7 @@ def vignere_cryptage(key, msg):
         k = (k + 1) % len(key)
     return crypted_msg
 
-def decryptage_vignere(key, msg):
+def decryptage_vigenere(key, msg):
     decrypted_msg = ""
     k = 0
     for m in range(len(msg)):

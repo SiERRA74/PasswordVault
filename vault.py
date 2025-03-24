@@ -1,7 +1,7 @@
 import tkinter as tk
 import wallpaper as wp
 import pwd_management as pwd
-import vignere
+import vigenere 
 import accounts_handling as acc
 from tkinter.scrolledtext import ScrolledText
 
@@ -42,8 +42,8 @@ def display_vault(canvas, width, height, wallpaper, username, master_password):
     # Ajouter les mots de passe
     for alias, details in passwords.items():
         # Décryptage des champs
-        login = vignere.decryptage_vignere(master_password, details["login"])
-        decrypted_password = vignere.decryptage_vignere(master_password, details["password"])
+        login = vigenere.decryptage_vigenere(master_password, details["login"])
+        decrypted_password = vigenere.decryptage_vigenere(master_password, details["password"])
 
         # Frame horizontale pour chaque mot de passe
         row_frame = tk.Frame(frame, bg="#000000")
@@ -109,7 +109,7 @@ def password_add_screen(canvas, width, height, wallpaper, username, master_passw
 
     # Bouton pour générer le mot de passe
     def enter_gen_password():
-        gen_pass = vignere.generate_password()
+        gen_pass = vigenere.generate_password()
         password_entry.delete(0, tk.END)  
         password_entry.insert(0, gen_pass)  
 
@@ -138,8 +138,8 @@ def password_add_screen(canvas, width, height, wallpaper, username, master_passw
             result_label.config(text="Tous les champs obligatoires doivent être remplis.", fg="red")
             return
 
-        encrypted_login = vignere.vignere_cryptage(master_password, login)
-        encrypted_password = vignere.vignere_cryptage(master_password, password)
+        encrypted_login = vigenere.vigenere_cryptage(master_password, login)
+        encrypted_password = vigenere.vigenere_cryptage(master_password, password)
 
         # Ajouter les données au gestionnaire
         pwd.add_password(username, alias, encrypted_login, encrypted_password, link)
@@ -179,4 +179,4 @@ def delete_password(alias, canvas, width, height, wallpaper, username, master_pa
 ######################################## PARTIE 4 : GENERATING SAFE PASSWORDS #################################################
 ############################################################################################################################"""
 
-#Voir vignere.py
+#Voir vigenere.py
